@@ -4,8 +4,8 @@
 create table transaction (
   id int constraint transaction_pk primary key,
   ticket_id int,
-  num_sold int,
-  price_per_ticket NUMERIC(10, 2)
+  quantity int,
+  unit_price NUMERIC(10, 2)
 )
 --rollback drop table transaction
 

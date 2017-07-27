@@ -10,6 +10,10 @@ public class RandomClientBuilderSupport {
         return new RandomEventBuilder();
     }
 
+    public RandomTransactionBuilder transaction() {
+        return new RandomTransactionBuilder();
+    }
+
     public RandomDynamicRuleBuilder dynamicRule() { return new RandomDynamicRuleBuilder(); }
 
 

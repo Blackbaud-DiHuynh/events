@@ -28,8 +28,8 @@ public class TransactionEntity {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "transaction_seq_gen")
     @SequenceGenerator(name = "transaction_seq_gen", sequenceName = "transaction_seq")
     private Integer id;
-    private BigDecimal pricePerTicket;
+    private BigDecimal unitPrice;
     private Integer ticketId;
-    private Integer numSold;
+    private Integer quantity;
 
 }
