@@ -8,3 +8,6 @@ databaseChangeLog:
 
   - include:
         file: db/create_transaction.sql
+
+  - include:
+        file: db/create_dynamic_pricing.sql
