@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -32,4 +33,12 @@ public class Event implements ApiEntity<Integer> {
     private List<Ticket> tickets;
 
     private Integer remainingInventory;
+
+    public int getFirstTicketId() {
+        return tickets.get(0).getId();
+    }
+
+    public Ticket getFirstTicket() {
+        return tickets.get(0);
+    }
 }

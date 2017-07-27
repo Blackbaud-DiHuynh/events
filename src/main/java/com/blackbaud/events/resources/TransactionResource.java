@@ -38,7 +38,6 @@ public class TransactionResource {
 
     @POST
     public Transaction purchaseTicket(Transaction transaction) {
-        // todo validate quantity is available
         TransactionEntity transactionEntity = transactionMapper.toEntity(transaction);
         TransactionEntity savedEntity = transactionRepository.save(transactionEntity);
         return transactionMapper.toApi(savedEntity);

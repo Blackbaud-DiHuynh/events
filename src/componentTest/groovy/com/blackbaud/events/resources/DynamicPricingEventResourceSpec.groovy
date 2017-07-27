@@ -1,9 +1,12 @@
 package com.blackbaud.events.resources
 
 import com.blackbaud.events.ComponentTest
-import com.blackbaud.events.api.DynamicRule
 import com.blackbaud.events.api.Event
+import com.blackbaud.events.api.Ticket
+import com.blackbaud.events.api.Transaction
 import com.blackbaud.events.client.DynamicRuleClient
+import com.blackbaud.events.client.EventClient
+import com.blackbaud.events.client.TransactionClient
 import com.blackbaud.events.core.domain.DynamicRuleRepository
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
@@ -14,14 +17,51 @@ import static com.blackbaud.events.core.CoreARandom.aRandom
 class DynamicPricingEventResourceSpec extends Specification {
 
     @Autowired
-    DynamicRuleClient dynamicRuleClient;
+    DynamicRuleClient dynamicRuleClient
 
     @Autowired
-    DynamicRuleRepository dynamicRuleRepository;
+    DynamicRuleRepository dynamicRuleRepository
 
+    @Autowired
+    EventClient eventClient
+
+    @Autowired
+    TransactionClient transactionClient
 
     def "when an event reaches inventory threshold, ticket price should automatically adjusts"() {
+        given:
+        int capacity = 100
+        BigDecimal basePrice = BigDecimal.TEN
+        Ticket ticket = aRandom.ticket().basePrice(basePrice).build()
+        Event event = eventClient.create(aRandom.event().capacity(capacity).tickets([ticket]).build())
+
+        and:
+        dynamicRuleClient.create(aRandom.dynamicRule()
+                                         .ticketId(event.getFirstTicketId())
+                                         .inventoryThreshold(50)
+                                         .priceChange(5)
+                                         .build())
+
+        when:
+        Event eventDetail = eventClient.find(event.id)
+
+        then:
+        eventDetail.tickets[0].currentPrice == basePrice
+
+        when:
+        sellTickets(eventDetail.getFirstTicketId(), 50)
+
+        then:
+        eventClient.find(event.id).getFirstTicket().currentPrice == basePrice + 5
+
     }
 
+    def sellTickets(Integer ticketId, Integer quantity) {
+        Transaction transaction = aRandom.transaction()
+                .quantity(quantity)
+                .ticketId(ticketId)
+                .build()
+        transactionClient.create(transaction)
+    }
 }
 
