@@ -1,6 +1,8 @@
 package com.blackbaud.events.resources
 
 import com.blackbaud.events.ComponentTest
+import com.blackbaud.events.api.Event
+import com.blackbaud.events.client.EventClient
 import com.blackbaud.events.core.domain.EventEntity
 import com.blackbaud.events.core.domain.EventRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,28 +16,28 @@ class EventResourceSpec extends Specification {
     @Autowired
     private EventRepository eventRepository
 
+    @Autowired
+    private EventClient eventClient
+
     def "can CRUD"() {
         given:
-        EventEntity eventEntity = aRandom.eventEntity().build()
+        Event event = aRandom.event().build()
 
         when:
-        EventEntity savedEvent = eventRepository.save(eventEntity)
+        Event savedEvent = eventClient.create(event)
 
         then:
         savedEvent.id > 0
 
         when:
         String newLocation = aRandom.words(10)
-        eventEntity.setLocation(newLocation)
-        EventEntity updatedEvent = eventRepository.save(eventEntity)
+        savedEvent.setLocation(newLocation)
+        Event updatedEvent = eventClient.update(savedEvent)
 
         then:
         updatedEvent.location == newLocation
 
-        when:
-        eventRepository.delete(eventEntity)
-
-        then:
-        eventRepository.findAll().size() == 0
+        and:
+        eventClient.find(updatedEvent.id).location == newLocation
     }
 }

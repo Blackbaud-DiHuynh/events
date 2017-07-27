@@ -7,7 +7,8 @@ create table event (
   time timestamp,
   location varchar(250),
   capacity int,
-  ticket_id int
+  ticket_id int,
+  name varchar(250)
 );
 --rollback drop table event
 

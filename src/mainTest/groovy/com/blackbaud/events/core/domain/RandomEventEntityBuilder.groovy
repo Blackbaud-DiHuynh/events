@@ -10,5 +10,6 @@ class RandomEventEntityBuilder extends EventEntity.EventEntityBuilder {
         .location(aRandom.words(10))
         .ticketId(aRandom.intId())
         .time(aRandom.sqlDate())
+        .name(aRandom.name())
     }
 }
