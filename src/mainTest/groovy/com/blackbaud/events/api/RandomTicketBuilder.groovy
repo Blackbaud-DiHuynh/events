@@ -10,6 +10,7 @@ class RandomTicketBuilder extends Ticket.TicketBuilder {
         this.id(aRandom.intId())
         .basePrice(BigDecimal.valueOf(aRandom.nextDouble()).setScale(2, RoundingMode.HALF_UP))
         .eventId(aRandom.intId())
+        .capacity(aRandom.intBetween(0,1000))
     }
 
 }

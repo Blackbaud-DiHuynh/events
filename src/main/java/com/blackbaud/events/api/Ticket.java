@@ -19,7 +19,6 @@ public class Ticket implements ApiEntity<Integer> {
     private Integer id;
     private BigDecimal basePrice;
     private Long eventId;
-
     private BigDecimal currentPrice;
-
+    private Integer capacity;
 }

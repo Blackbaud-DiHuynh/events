@@ -2,15 +2,12 @@ package com.blackbaud.events.resources
 
 import com.blackbaud.events.ComponentTest
 import com.blackbaud.events.api.Event
-import com.blackbaud.events.api.Ticket
 import com.blackbaud.events.api.Transaction
 import com.blackbaud.events.client.EventClient
 import com.blackbaud.events.client.TicketClient
 import com.blackbaud.events.client.TransactionClient
-import com.blackbaud.events.core.domain.EventEntity
 import com.blackbaud.events.core.domain.EventRepository
 import com.blackbaud.events.core.domain.TicketRepository
-import com.blackbaud.events.core.domain.TransactionEntity
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 
@@ -36,7 +33,7 @@ class EventResourceSpec extends Specification {
 
     def "Get event includes ticket info"() {
         given:
-        Event savedEvent =  eventClient.create(aRandom.event().build())
+        Event savedEvent = eventClient.create(aRandom.event().build())
 //        Ticket ticket = aRandom.ticket().eventId(savedEvent.id).build()
 //        ticketClient.create(ticket)
 

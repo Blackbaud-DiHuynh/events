@@ -30,5 +30,5 @@ public class TicketEntity {
     private Long id;
     private BigDecimal basePrice;
     private Integer eventId;
-
+    private Integer capacity;
 }

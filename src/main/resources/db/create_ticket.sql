@@ -4,7 +4,8 @@
 create table ticket (
   id int constraint ticket_pk primary key,
   base_price NUMERIC(10, 2),
-  event_id int
+  event_id int,
+  capacity int
 )
 --rollback drop table ticket
 

@@ -34,11 +34,7 @@ public class Event implements ApiEntity<Integer> {
 
     private Integer remainingInventory;
 
-    public int getFirstTicketId() {
-        return tickets.get(0).getId();
-    }
-
-    public Ticket getFirstTicket() {
+    public Ticket firstTicket() {
         return tickets.get(0);
     }
 }

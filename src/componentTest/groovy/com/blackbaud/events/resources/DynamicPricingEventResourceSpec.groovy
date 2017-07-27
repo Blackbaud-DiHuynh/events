@@ -37,7 +37,7 @@ class DynamicPricingEventResourceSpec extends Specification {
 
         and:
         dynamicRuleClient.create(aRandom.dynamicRule()
-                                         .ticketId(event.getFirstTicketId())
+                                         .ticketId(event.firstTicket().id)
                                          .inventoryThreshold(50)
                                          .priceChange(5)
                                          .build())
@@ -49,10 +49,10 @@ class DynamicPricingEventResourceSpec extends Specification {
         eventDetail.tickets[0].currentPrice == basePrice
 
         when:
-        sellTickets(eventDetail.getFirstTicketId(), 50)
+        sellTickets(eventDetail.firstTicket().id, 50)
 
         then:
-        eventClient.find(event.id).getFirstTicket().currentPrice == basePrice + 5
+        eventClient.find(event.id).firstTicket().currentPrice == basePrice + 5
 
     }
 
