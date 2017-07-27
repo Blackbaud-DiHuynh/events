@@ -8,9 +8,13 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.Date;
 
 @Entity(name = "event")
 @Table(name = "event")
@@ -22,7 +26,17 @@ import java.util.UUID;
 public class EventEntity {
 
     @Id
-    @org.hibernate.annotations.Type(type = "org.hibernate.type.PostgresUUIDType")
-    private UUID id = UUID.randomUUID();
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "event_seq_gen")
+    @SequenceGenerator(name = "event_seq_gen", sequenceName = "event_seq")
+    private int id;
 
+    private Date date;
+
+    private Date time;
+
+    private String location;
+
+    private int capacity;
+
+    private int ticketId;
 }
