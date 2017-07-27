@@ -5,3 +5,6 @@ databaseChangeLog:
 
   - include:
         file: db/create_ticket.sql
+
+  - include:
+        file: db/create_transaction.sql
