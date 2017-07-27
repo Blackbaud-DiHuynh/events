@@ -40,4 +40,12 @@ public class DynamicRuleEntity {
 
     @Enumerated(EnumType.STRING)
     private DynamicRuleType type;
+
+    Boolean shouldApply(Integer inventoryRemaining) {
+        return inventoryThreshold >= inventoryRemaining;
+    }
+
+    public BigDecimal apply(BigDecimal basePrice) {
+        return basePrice.add(priceChange);
+    }
 }

@@ -83,9 +83,9 @@ public class EventResource {
         EventEntity createdEvent = eventRepository.save(entity);
         List<TicketEntity> ticketEntities = ticketMapper.toEntityList(event.getTickets());
         ticketEntities.forEach(ticket -> ticket.setEventId(createdEvent.getId()));
-        ticketRepository.save(ticketEntities);
+        List<TicketEntity> ticketEntities1 = (List<TicketEntity>) ticketRepository.save(ticketEntities);
         Event savedEvent = eventConverter.toApi(createdEvent);
-        savedEvent.setTickets(ticketMapper.toApiList(ticketEntities));
+        savedEvent.setTickets(ticketMapper.toApiList(ticketEntities1));
         return savedEvent;
     }
 

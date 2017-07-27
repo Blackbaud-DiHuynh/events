@@ -32,8 +32,8 @@ class DynamicPricingEventResourceSpec extends Specification {
         given:
         int capacity = 100
         BigDecimal basePrice = BigDecimal.TEN
-        Ticket ticket = aRandom.ticket().basePrice(basePrice).build()
-        Event event = eventClient.create(aRandom.event().capacity(capacity).tickets([ticket]).build())
+        Ticket ticket = aRandom.ticket().basePrice(basePrice).capacity(capacity).build()
+        Event event = eventClient.create(aRandom.event().tickets([ticket]).build())
 
         and:
         dynamicRuleClient.create(aRandom.dynamicRule()

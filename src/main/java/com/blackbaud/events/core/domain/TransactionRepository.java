@@ -7,4 +7,6 @@ import java.util.List;
 public interface TransactionRepository extends CrudRepository<TransactionEntity, Integer> {
 
     List<TransactionEntity> findByTicketIdIn(List<Integer> ticketIds);
+
+    List<TransactionEntity> findByTicketId(Integer ticketId);
 }
