@@ -29,6 +29,6 @@ public class TicketEntity {
     @SequenceGenerator(name = "ticket_seq_gen", sequenceName = "ticket_seq")
     private Long id;
     private BigDecimal basePrice;
-    private Long eventId;
+    private Integer eventId;
 
 }

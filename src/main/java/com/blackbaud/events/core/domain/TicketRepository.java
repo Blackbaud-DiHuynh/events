@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface TicketRepository extends PagingAndSortingRepository<TicketEntity, Long> {
 
-    TicketEntity findOneByEventId(Long eventId);
+    TicketEntity findOneByEventId(Integer eventId);
 
 }

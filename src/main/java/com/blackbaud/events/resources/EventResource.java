@@ -1,12 +1,17 @@
 package com.blackbaud.events.resources;
 
-import com.blackbaud.events.api.ResourcePaths;
 import com.blackbaud.events.api.Event;
+import com.blackbaud.events.api.ResourcePaths;
+import com.blackbaud.events.api.Ticket;
+import com.blackbaud.events.core.domain.EventEntity;
+import com.blackbaud.events.core.domain.EventRepository;
+import com.blackbaud.events.core.domain.TicketEntity;
+import com.blackbaud.events.core.domain.TicketRepository;
+import com.blackbaud.mapper.ApiEntityMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
 import javax.validation.Valid;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -15,15 +20,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
-import com.blackbaud.events.core.domain.EventEntity;
-import com.blackbaud.events.core.domain.EventRepository;
-import com.blackbaud.mapper.ApiEntityMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
+import java.util.List;
 
 @Component
 @Path(ResourcePaths.EVENT_PATH)
@@ -36,7 +34,11 @@ public class EventResource {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private TicketRepository ticketRepository;
+
     private EventConverter eventConverter = new EventConverter();
+    private ApiEntityMapper<Ticket, TicketEntity> ticketMapper = new ApiEntityMapper<>(Ticket.class, TicketEntity.class);
 
     @GET
     public List<Event> findAll() {
@@ -45,20 +47,23 @@ public class EventResource {
 
     @GET
     @Path("{id}")
-    public Event get(@PathParam("id")Integer id) {
+    public Event get(@PathParam("id") Integer id) {
         return eventConverter.toApi(eventRepository.findOne(id));
     }
 
     @POST
     public Event create(@Valid Event event) {
         EventEntity entity = eventConverter.toEntity(event);
-        EventEntity createdEntity = eventRepository.save(entity);
-        return eventConverter.toApi(createdEntity);
+        EventEntity createdEvent = eventRepository.save(entity);
+        TicketEntity ticketEntity = ticketMapper.toEntity(event.getTicket());
+        ticketEntity.setEventId(createdEvent.getId());
+        ticketRepository.save(ticketEntity);
+        return eventConverter.toApi(createdEvent);
     }
 
     @PUT
     @Path("{id}")
-    public Event update(@PathParam("id")Integer id, @Valid Event event) {
+    public Event update(@PathParam("id") Integer id, @Valid Event event) {
         EventEntity savedEvent = eventRepository.save(eventConverter.toEntity(event));
         return eventConverter.toApi(savedEvent);
     }

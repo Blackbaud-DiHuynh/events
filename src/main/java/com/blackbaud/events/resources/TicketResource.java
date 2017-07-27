@@ -43,7 +43,7 @@ public class TicketResource {
 
     @GET
     @Path("{eventId}")
-    public Ticket getTicket(@PathParam("eventId") Long eventId) {
+    public Ticket getTicket(@PathParam("eventId") Integer eventId) {
         TicketEntity ticketEntity = ticketRepository.findOneByEventId(eventId);
         Ticket ticket = ticketMapper.toApi(ticketEntity);
         return ticket;
