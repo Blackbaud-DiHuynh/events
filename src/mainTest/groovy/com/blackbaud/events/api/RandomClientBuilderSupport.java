@@ -10,6 +10,7 @@ public class RandomClientBuilderSupport {
         return new RandomEventBuilder();
     }
 
+    public RandomDynamicRuleBuilder dynamicRule() { return new RandomDynamicRuleBuilder(); }
 
 
 }
