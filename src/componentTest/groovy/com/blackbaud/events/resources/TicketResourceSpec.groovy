@@ -36,9 +36,9 @@ class TicketResourceSpec extends Specification {
         updatedTicket.basePrice == BigDecimal.ONE
 
         when:
-        ticketClient.delete(updatedTicket)
+        ticketClient.delete(updatedTicket.id)
 
         then:
-        ticketClient.findAll().size() == 0
+        ticketRepository.findAll().size() == 0
     }
 }
