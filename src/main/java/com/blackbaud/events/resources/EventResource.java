@@ -8,6 +8,8 @@ import com.blackbaud.events.core.domain.EventEntity;
 import com.blackbaud.events.core.domain.EventRepository;
 import com.blackbaud.events.core.domain.TicketEntity;
 import com.blackbaud.events.core.domain.TicketRepository;
+import com.blackbaud.events.core.domain.TransactionEntity;
+import com.blackbaud.events.core.domain.TransactionRepository;
 import com.blackbaud.mapper.ApiEntityMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,8 +24,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Path(ResourcePaths.EVENT_PATH)
@@ -38,6 +40,9 @@ public class EventResource {
 
     @Autowired
     private TicketRepository ticketRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     private EventConverter eventConverter = new EventConverter();
     private ApiEntityMapper<Ticket, TicketEntity> ticketMapper = new ApiEntityMapper<>(Ticket.class, TicketEntity.class);
@@ -60,7 +65,16 @@ public class EventResource {
         event.setTickets(ticketMapper.toApiList(ticketEntities));
 
         event.getTickets().forEach(ticket -> ticket.setCurrentPrice(dynamicPricingService.getCurrentPrice(ticket)));
+
+        event.setRemainingInventory(getRemainingInventory(event));
         return event;
+    }
+
+    private Integer getRemainingInventory(Event event) {
+        List<Integer> ticketIds = event.getTickets().stream().map(ticket -> ticket.getId()).collect(Collectors.toList());
+        List<TransactionEntity> transactions = transactionRepository.findByTicketIdIn(ticketIds);
+        Integer totalTicketsSold = transactions.stream().mapToInt(TransactionEntity::getQuantity).sum();
+        return event.getCapacity() - totalTicketsSold;
     }
 
     @POST
@@ -68,7 +82,7 @@ public class EventResource {
         EventEntity entity = eventConverter.toEntity(event);
         EventEntity createdEvent = eventRepository.save(entity);
         List<TicketEntity> ticketEntities = ticketMapper.toEntityList(event.getTickets());
-        ticketEntities.forEach(ticket ->  ticket.setEventId(createdEvent.getId()));
+        ticketEntities.forEach(ticket -> ticket.setEventId(createdEvent.getId()));
         ticketRepository.save(ticketEntities);
         Event savedEvent = eventConverter.toApi(createdEvent);
         savedEvent.setTickets(ticketMapper.toApiList(ticketEntities));

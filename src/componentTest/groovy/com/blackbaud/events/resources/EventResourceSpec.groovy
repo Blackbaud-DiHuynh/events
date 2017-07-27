@@ -3,11 +3,14 @@ package com.blackbaud.events.resources
 import com.blackbaud.events.ComponentTest
 import com.blackbaud.events.api.Event
 import com.blackbaud.events.api.Ticket
+import com.blackbaud.events.api.Transaction
 import com.blackbaud.events.client.EventClient
 import com.blackbaud.events.client.TicketClient
+import com.blackbaud.events.client.TransactionClient
 import com.blackbaud.events.core.domain.EventEntity
 import com.blackbaud.events.core.domain.EventRepository
 import com.blackbaud.events.core.domain.TicketRepository
+import com.blackbaud.events.core.domain.TransactionEntity
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 
@@ -27,6 +30,9 @@ class EventResourceSpec extends Specification {
 
     @Autowired
     private TicketClient ticketClient
+
+    @Autowired
+    private TransactionClient transactionClient
 
     def "Get event includes ticket info"() {
         given:
@@ -72,5 +78,31 @@ class EventResourceSpec extends Specification {
 
         then: "we save the ticket price in the database"
         ticketRepository.findByEventId(createdEvent.id).size() == 1
+    }
+
+    def "get event should return inventory remaining"() {
+        given:
+        int capacity = 100
+        Event event = eventClient.create(aRandom.event().capacity(capacity).build())
+
+        when:
+        Event eventDetail = eventClient.find(event.id)
+
+        then:
+        eventDetail.remainingInventory == capacity
+
+        when:
+        sellOneTicket(eventDetail.tickets[0].id)
+        sellOneTicket(eventDetail.tickets[0].id)
+
+        then:
+        capacity - 2 == eventClient.find(event.id).remainingInventory
+    }
+
+    def sellOneTicket(Integer ticketId) {
+        Transaction transaction = aRandom.transaction().quantity(1)
+                .ticketId(ticketId)
+                .build()
+        transactionClient.create(transaction)
     }
 }

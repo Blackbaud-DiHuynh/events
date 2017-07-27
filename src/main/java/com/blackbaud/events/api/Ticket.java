@@ -14,9 +14,9 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Ticket implements ApiEntity<Long> {
+public class Ticket implements ApiEntity<Integer> {
 
-    private Long id;
+    private Integer id;
     private BigDecimal basePrice;
     private Long eventId;
 
