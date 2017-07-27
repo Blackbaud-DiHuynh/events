@@ -5,11 +5,13 @@ buildscript {
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "com.blackbaud:gradle-internal:3.+"
+        classpath "com.blackbaud:gradle-docker:1.+"
         classpath "com.blackbaud:gradle-templates:2.+"
     }
 }
 
 apply plugin: "blackbaud-internal-rest"
+apply plugin: "postgres"
 apply plugin: "blackbaud-templates"
 apply plugin: "spring-boot"
 
@@ -29,6 +31,7 @@ sourceSets {
 
 dependencies {
     compile "com.blackbaud:common-spring-boot-rest:${springBootVersion}-2.+"
+    compile "com.blackbaud:common-spring-boot-persistence:${springBootVersion}-2.+"
 
     clientCompile "com.blackbaud:common-spring-boot-rest:${springBootVersion}-2.+"
 

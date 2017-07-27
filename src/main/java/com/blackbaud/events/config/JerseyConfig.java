@@ -14,6 +14,7 @@ public class JerseyConfig extends CommonJerseyConfig {
     public void initialize() {
         super.initialize();
         packages("com.blackbaud.events.config");
+        packages("com.blackbaud.events.resources");
     }
 
 }
