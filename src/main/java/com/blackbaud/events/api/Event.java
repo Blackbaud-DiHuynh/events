@@ -29,4 +29,6 @@ public class Event implements ApiEntity<Integer> {
     private int ticketId;
 
     private String name;
+
+    private Ticket ticket;
 }
