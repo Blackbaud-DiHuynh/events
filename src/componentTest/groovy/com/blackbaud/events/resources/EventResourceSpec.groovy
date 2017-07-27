@@ -2,7 +2,9 @@ package com.blackbaud.events.resources
 
 import com.blackbaud.events.ComponentTest
 import com.blackbaud.events.api.Event
+import com.blackbaud.events.api.Ticket
 import com.blackbaud.events.client.EventClient
+import com.blackbaud.events.client.TicketClient
 import com.blackbaud.events.core.domain.EventEntity
 import com.blackbaud.events.core.domain.EventRepository
 import com.blackbaud.events.core.domain.TicketRepository
@@ -22,6 +24,22 @@ class EventResourceSpec extends Specification {
 
     @Autowired
     private EventClient eventClient
+
+    @Autowired
+    private TicketClient ticketClient
+
+    def "Get event includes ticket info"() {
+        given:
+        Event savedEvent =  eventClient.create(aRandom.event().build())
+//        Ticket ticket = aRandom.ticket().eventId(savedEvent.id).build()
+//        ticketClient.create(ticket)
+
+        when:
+        Event returnedEvent = eventClient.find(savedEvent.id)
+
+        then:
+        returnedEvent.tickets[0].currentPrice == savedEvent.tickets[0].basePrice
+    }
 
     def "can CRUD"() {
         given:
@@ -53,6 +71,6 @@ class EventResourceSpec extends Specification {
         Event createdEvent = eventClient.create(event)
 
         then: "we save the ticket price in the database"
-        null != ticketRepository.findOneByEventId(createdEvent.id)
+        ticketRepository.findByEventId(createdEvent.id).size() == 1
     }
 }

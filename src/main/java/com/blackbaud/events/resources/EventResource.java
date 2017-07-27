@@ -21,6 +21,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Component
@@ -48,17 +49,33 @@ public class EventResource {
     @GET
     @Path("{id}")
     public Event get(@PathParam("id") Integer id) {
-        return eventConverter.toApi(eventRepository.findOne(id));
+        EventEntity eventEntity = eventRepository.findOne(id);
+        List<TicketEntity> ticketEntities = ticketRepository.findByEventId(eventEntity.getId());
+
+        Event event = eventConverter.toApi(eventEntity);
+        event.setTickets(ticketMapper.toApiList(ticketEntities));
+
+        event.getTickets().forEach(ticket -> ticket.setCurrentPrice(calculateCurrentPrice(ticket)));
+
+        return event;
+    }
+
+    private BigDecimal calculateCurrentPrice(Ticket ticket) {
+
+
+        return ticket.getBasePrice();
     }
 
     @POST
     public Event create(@Valid Event event) {
         EventEntity entity = eventConverter.toEntity(event);
         EventEntity createdEvent = eventRepository.save(entity);
-        TicketEntity ticketEntity = ticketMapper.toEntity(event.getTicket());
-        ticketEntity.setEventId(createdEvent.getId());
-        ticketRepository.save(ticketEntity);
-        return eventConverter.toApi(createdEvent);
+        List<TicketEntity> ticketEntities = ticketMapper.toEntityList(event.getTickets());
+        ticketEntities.forEach(ticket ->  ticket.setEventId(createdEvent.getId()));
+        ticketRepository.save(ticketEntities);
+        Event savedEvent = eventConverter.toApi(createdEvent);
+        savedEvent.setTickets(ticketMapper.toApiList(ticketEntities));
+        return savedEvent;
     }
 
     @PUT

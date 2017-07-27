@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(of = "id")
@@ -26,9 +27,9 @@ public class Event implements ApiEntity<Integer> {
 
     private int capacity;
 
-    private int ticketId;
-
     private String name;
 
-    private Ticket ticket;
+    private List<Ticket> tickets;
+
+    private Integer remainingInventory;
 }

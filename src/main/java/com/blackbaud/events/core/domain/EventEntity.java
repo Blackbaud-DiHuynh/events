@@ -38,7 +38,5 @@ public class EventEntity {
 
     private int capacity;
 
-    private int ticketId;
-
     private String name;
 }

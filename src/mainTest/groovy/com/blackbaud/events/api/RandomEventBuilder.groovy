@@ -10,9 +10,8 @@ class RandomEventBuilder extends Event.EventBuilder {
                 .capacity(Math.abs(aRandom.nextInt()))
                 .date(aRandom.sqlDateInFuture())
                 .location(aRandom.words(10))
-                .ticketId(aRandom.intId())
                 .time(aRandom.sqlDate())
                 .name(aRandom.name())
-                .ticket(aRandom.ticket().id(null).eventId(eventId).build())
+                .tickets([aRandom.ticket().id(null).eventId(eventId).build()])
     }
 }

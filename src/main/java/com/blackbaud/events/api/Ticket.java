@@ -20,4 +20,6 @@ public class Ticket implements ApiEntity<Long> {
     private BigDecimal basePrice;
     private Long eventId;
 
+    private BigDecimal currentPrice;
+
 }

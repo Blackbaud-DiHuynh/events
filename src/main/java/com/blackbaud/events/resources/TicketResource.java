@@ -41,13 +41,13 @@ public class TicketResource {
         return ticketMapper.toApiList(ticketEntities);
     }
 
-    @GET
-    @Path("{eventId}")
-    public Ticket getTicket(@PathParam("eventId") Integer eventId) {
-        TicketEntity ticketEntity = ticketRepository.findOneByEventId(eventId);
-        Ticket ticket = ticketMapper.toApi(ticketEntity);
-        return ticket;
-    }
+//    @GET
+//    @Path("{eventId}")
+//    public Ticket getTicket(@PathParam("eventId") Integer eventId) {
+//        TicketEntity ticketEntity = ticketRepository.findByEventId(eventId);
+//        Ticket ticket = ticketMapper.toApi(ticketEntity);
+//        return ticket;
+//    }
 
     @POST
     public Ticket createTicket(Ticket ticket) {
