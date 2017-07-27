@@ -1,5 +1,6 @@
 package com.blackbaud.events;
 
+import com.blackbaud.events.client.TicketClient;
 import com.blackbaud.testsupport.BaseTestConfig;
 import org.springframework.context.annotation.Bean;
 import com.blackbaud.events.client.EventClient;
@@ -17,6 +18,12 @@ public class TestConfig extends BaseTestConfig {
     @Bean
     public EventClient eventClient() {
         return new EventClient(hostUri)
+                .header(testTokenSupport.createTestTokenHeader());
+    }
+
+    @Bean
+    public TicketClient ticketClient() {
+        return new TicketClient(hostUri)
                 .header(testTokenSupport.createTestTokenHeader());
     }
 

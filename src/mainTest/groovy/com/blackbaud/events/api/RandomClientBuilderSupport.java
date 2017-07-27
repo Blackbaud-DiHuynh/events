@@ -1,10 +1,15 @@
 package com.blackbaud.events.api;
-import com.blackbaud.events.api.RandomEventBuilder;
 
 public class RandomClientBuilderSupport {
+
+    public RandomTicketBuilder ticket() {
+        return new RandomTicketBuilder();
+    }
 
     public RandomEventBuilder event() {
         return new RandomEventBuilder();
     }
+
+
 
 }

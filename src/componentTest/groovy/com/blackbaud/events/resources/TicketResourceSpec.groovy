@@ -1,9 +1,8 @@
 package com.blackbaud.events.resources
 
 import com.blackbaud.events.ComponentTest
-import com.blackbaud.events.core.domain.EventEntity
-import com.blackbaud.events.core.domain.EventRepository
-import com.blackbaud.events.core.domain.TicketEntity
+import com.blackbaud.events.api.Ticket
+import com.blackbaud.events.client.TicketClient
 import com.blackbaud.events.core.domain.TicketRepository
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
@@ -16,27 +15,30 @@ class TicketResourceSpec extends Specification {
     @Autowired
     private TicketRepository ticketRepository
 
+    @Autowired
+    private TicketClient ticketClient
+
     def "Basic crud operations"() {
         given:
-        TicketEntity ticketEntity = aRandom.ticketEntity().id(null).build()
+        Ticket ticket = aRandom.ticket().build()
 
         when:
-        TicketEntity savedTicket = ticketRepository.save(ticketEntity)
+        Ticket savedTicket = ticketClient.create(ticket)
 
         then:
         savedTicket.id > 0
 
         when:
         savedTicket.setBasePrice(BigDecimal.ONE)
-        TicketEntity updatedTicket = ticketRepository.save(savedTicket)
+        Ticket updatedTicket = ticketClient.update(savedTicket)
 
         then:
         updatedTicket.basePrice == BigDecimal.ONE
 
         when:
-        ticketRepository.delete(updatedTicket)
+        ticketClient.delete(updatedTicket)
 
         then:
-        ticketRepository.findAll().size() == 0
+        ticketClient.findAll().size() == 0
     }
 }

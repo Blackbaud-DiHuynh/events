@@ -1,5 +1,6 @@
 package com.blackbaud.events.api;
 
+import com.blackbaud.rest.api.ApiEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Ticket {
+public class Ticket implements ApiEntity<Long> {
 
     private Long id;
     private BigDecimal basePrice;

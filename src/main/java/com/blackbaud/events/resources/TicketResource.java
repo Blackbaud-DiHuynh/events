@@ -10,7 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.validation.Valid;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -24,7 +28,6 @@ import java.util.List;
 public class TicketResource {
 
     private ApiEntityMapper<Ticket, TicketEntity> ticketMapper = new ApiEntityMapper<>(Ticket.class, TicketEntity.class);
-
 
     @Autowired
     TicketRepository ticketRepository;
@@ -44,6 +47,29 @@ public class TicketResource {
         TicketEntity ticketEntity = ticketRepository.findOneByEventId(eventId);
         Ticket ticket = ticketMapper.toApi(ticketEntity);
         return ticket;
+    }
+
+    @POST
+    public Ticket createTicket(Ticket ticket) {
+        TicketEntity ticketEntity = ticketMapper.toEntity(ticket);
+        TicketEntity savedEntity = ticketRepository.save(ticketEntity);
+        Ticket savedticket = ticketMapper.toApi(savedEntity);
+        return savedticket;
+    }
+
+    @PUT
+    @Path("{id}")
+    public Ticket update(@PathParam("id") Integer id, Ticket ticket) {
+        TicketEntity ticketEntity = ticketMapper.toEntity(ticket);
+        TicketEntity savedEntity = ticketRepository.save(ticketEntity);
+        Ticket savedticket = ticketMapper.toApi(savedEntity);
+        return savedticket;
+    }
+
+    @DELETE
+    @Path("{id}")
+    public void deleteTicket(@PathParam("id") Long id) {
+        ticketRepository.delete(id);
     }
 
 }
