@@ -3,6 +3,7 @@ package com.blackbaud.events.resources;
 import com.blackbaud.events.api.Event;
 import com.blackbaud.events.api.ResourcePaths;
 import com.blackbaud.events.api.Ticket;
+import com.blackbaud.events.core.domain.DynamicPricingService;
 import com.blackbaud.events.core.domain.EventEntity;
 import com.blackbaud.events.core.domain.EventRepository;
 import com.blackbaud.events.core.domain.TicketEntity;
@@ -41,6 +42,9 @@ public class EventResource {
     private EventConverter eventConverter = new EventConverter();
     private ApiEntityMapper<Ticket, TicketEntity> ticketMapper = new ApiEntityMapper<>(Ticket.class, TicketEntity.class);
 
+    @Autowired
+    private DynamicPricingService dynamicPricingService;
+
     @GET
     public List<Event> findAll() {
         return eventConverter.toApiList((List<EventEntity>) eventRepository.findAll());
@@ -55,15 +59,8 @@ public class EventResource {
         Event event = eventConverter.toApi(eventEntity);
         event.setTickets(ticketMapper.toApiList(ticketEntities));
 
-        event.getTickets().forEach(ticket -> ticket.setCurrentPrice(calculateCurrentPrice(ticket)));
-
+        event.getTickets().forEach(ticket -> ticket.setCurrentPrice(dynamicPricingService.getCurrentPrice(ticket)));
         return event;
-    }
-
-    private BigDecimal calculateCurrentPrice(Ticket ticket) {
-
-
-        return ticket.getBasePrice();
     }
 
     @POST
