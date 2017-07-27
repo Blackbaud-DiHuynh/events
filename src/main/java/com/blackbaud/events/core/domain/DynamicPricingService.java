@@ -21,7 +21,8 @@ public class DynamicPricingService {
     public BigDecimal getCurrentPrice(Ticket ticket) {
         List<TransactionEntity> transactions = transactionRepository.findByTicketId(ticket.getId());
         Integer totalTicketsSold = transactions.stream().mapToInt(TransactionEntity::getQuantity).sum();
-        Integer ticketRemaining = ticket.getCapacity() - totalTicketsSold;
+        Integer ticketCapacity = ticket.getCapacity() == null ? 0 : ticket.getCapacity();
+        Integer ticketRemaining = ticketCapacity - totalTicketsSold;
 
         List<DynamicRuleEntity> dynamicRules = ruleRepository.findByTicketId(ticket.getId());
         if (!dynamicRules.isEmpty()) {

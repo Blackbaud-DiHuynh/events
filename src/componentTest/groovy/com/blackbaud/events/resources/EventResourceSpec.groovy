@@ -34,8 +34,6 @@ class EventResourceSpec extends Specification {
     def "Get event includes ticket info"() {
         given:
         Event savedEvent = eventClient.create(aRandom.event().build())
-//        Ticket ticket = aRandom.ticket().eventId(savedEvent.id).build()
-//        ticketClient.create(ticket)
 
         when:
         Event returnedEvent = eventClient.find(savedEvent.id)
