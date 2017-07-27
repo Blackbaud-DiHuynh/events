@@ -23,11 +23,13 @@ public class DynamicPricingService {
         Integer totalTicketsSold = transactions.stream().mapToInt(TransactionEntity::getQuantity).sum();
         Integer ticketRemaining = ticket.getCapacity() - totalTicketsSold;
 
-        DynamicRuleEntity dynamicRule = ruleRepository.findByTicketId(ticket.getId()).get(0);
-        if (dynamicRule.shouldApply(ticketRemaining)) {
-            return dynamicRule.apply(ticket.getBasePrice());
+        List<DynamicRuleEntity> dynamicRules = ruleRepository.findByTicketId(ticket.getId());
+        if (!dynamicRules.isEmpty()) {
+            DynamicRuleEntity dynamicRule = dynamicRules.get(0);
+            if (dynamicRule.shouldApply(ticketRemaining)) {
+                return dynamicRule.apply(ticket.getBasePrice());
+            }
         }
-
         return ticket.getBasePrice();
     }
 }

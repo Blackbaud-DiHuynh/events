@@ -52,13 +52,18 @@ public class EventResource {
 
     @GET
     public List<Event> findAll() {
-        return eventConverter.toApiList((List<EventEntity>) eventRepository.findAll());
+        List<EventEntity>  allEvents = (List<EventEntity>) eventRepository.findAll();
+        return allEvents.stream().map(this::getEventWithTicketInfo).collect(Collectors.toList());
     }
 
     @GET
     @Path("{id}")
     public Event get(@PathParam("id") Integer id) {
         EventEntity eventEntity = eventRepository.findOne(id);
+        return getEventWithTicketInfo(eventEntity);
+    }
+
+    private Event getEventWithTicketInfo(EventEntity eventEntity) {
         List<TicketEntity> ticketEntities = ticketRepository.findByEventId(eventEntity.getId());
 
         Event event = eventConverter.toApi(eventEntity);

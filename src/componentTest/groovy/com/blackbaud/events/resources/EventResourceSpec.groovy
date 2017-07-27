@@ -96,6 +96,20 @@ class EventResourceSpec extends Specification {
         capacity - 2 == eventClient.find(event.id).remainingInventory
     }
 
+    def "getAll should return tickets and their prices"() {
+        given:
+        eventClient.create(aRandom.event().build())
+        eventClient.create(aRandom.event().build())
+
+        when:
+        List<Event> events = eventClient.findMany()
+
+        then:
+        events.each {
+            assert it.tickets != null
+        }
+    }
+
     def sellOneTicket(Integer ticketId) {
         Transaction transaction = aRandom.transaction().quantity(1)
                 .ticketId(ticketId)
