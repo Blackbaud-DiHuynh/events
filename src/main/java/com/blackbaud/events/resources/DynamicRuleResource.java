@@ -9,10 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -29,5 +32,13 @@ public class DynamicRuleResource {
     public DynamicRule create(DynamicRule rule) {
         DynamicRuleEntity created = dynamicRuleRepository.save(converter.toEntity(rule));
         return converter.toApi(created);
+    }
+
+
+    @GET
+    @Path("{ticketId}")
+    public List<DynamicRule> getRules(@PathParam("ticketId") Integer ticketId) {
+        List<DynamicRuleEntity> entities = dynamicRuleRepository.findByTicketId(ticketId);
+        return converter.toApiList(entities);
     }
 }

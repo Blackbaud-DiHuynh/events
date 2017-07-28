@@ -33,5 +33,19 @@ class DynamicRuleResourceSpec extends Specification {
         then:
         null != dynamicRuleRepository.findOne(createdRule.id)
     }
+
+    def "can get all dynamic rules for a ticket"() {
+        given:
+        Integer ticketId = aRandom.intId()
+        DynamicRule rule1 = dynamicRuleClient.create(aRandom.dynamicRule().ticketId(ticketId).build())
+        DynamicRule rule2 = dynamicRuleClient.create(aRandom.dynamicRule().ticketId(ticketId).build())
+
+        when:
+        List<DynamicRule> rules = dynamicRuleClient.findManyByTicketId(ticketId)
+
+        then:
+        rules[0] == rule1
+        rules[1] == rule2
+    }
 }
 
