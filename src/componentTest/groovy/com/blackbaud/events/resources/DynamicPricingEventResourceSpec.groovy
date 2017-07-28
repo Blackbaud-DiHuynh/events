@@ -72,19 +72,19 @@ class DynamicPricingEventResourceSpec extends Specification {
         dynamicRuleClient.create(aRandom.dynamicRule(ticketId).inventoryThreshold(firstThreshold).priceChange(firstPriceChange).build())
         dynamicRuleClient.create(aRandom.dynamicRule(ticketId).inventoryThreshold(secondThreshold).priceChange(secondPriceChange).build())
 
-        when:
+        when: "sell 20 tickets, should have 80 remaining"
         sellTickets(ticketId, 20)
 
         then:
         getCurrentPriceForEvent(event) == basePrice
 
-        when:
+        when: "sell 34 more tickets, should have 46 remaining"
         sellTickets(ticketId, 34)
 
         then:
         getCurrentPriceForEvent(event) == basePrice + firstPriceChange
 
-        when:
+        when: "sell 25 more tickets, should have 21 remaining"
         sellTickets(ticketId, 25)
 
         then:
