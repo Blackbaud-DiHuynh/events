@@ -16,5 +16,9 @@ public class RandomClientBuilderSupport {
 
     public RandomDynamicRuleBuilder dynamicRule() { return new RandomDynamicRuleBuilder(); }
 
-
+    public RandomDynamicRuleBuilder dynamicRule(Integer ticketId) {
+        RandomDynamicRuleBuilder builder = new RandomDynamicRuleBuilder();
+        builder.ticketId(ticketId);
+        return builder;
+    }
 }

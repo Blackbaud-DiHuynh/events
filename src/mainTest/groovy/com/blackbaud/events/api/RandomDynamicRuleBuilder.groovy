@@ -11,4 +11,6 @@ class RandomDynamicRuleBuilder extends DynamicRule.DynamicRuleBuilder {
                 .inventoryThreshold(aRandom.intBetween(0, 100))
                 .type(DynamicRuleType.CAPACITY)
     }
+
+
 }

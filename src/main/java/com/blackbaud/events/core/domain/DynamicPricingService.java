@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class DynamicPricingService {
@@ -26,10 +27,13 @@ public class DynamicPricingService {
 
         List<DynamicRuleEntity> dynamicRules = ruleRepository.findByTicketId(ticket.getId());
         if (!dynamicRules.isEmpty()) {
-            DynamicRuleEntity dynamicRule = dynamicRules.get(0);
-            if (dynamicRule.shouldApply(ticketRemaining)) {
-                return dynamicRule.apply(ticket.getBasePrice());
-            }
+
+            BigDecimal totalPriceChange = dynamicRules.stream()
+                    .filter(rule -> rule.shouldApply(ticketRemaining))
+                    .map(DynamicRuleEntity::getPriceChange)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            return ticket.getBasePrice().add(totalPriceChange);
         }
         return ticket.getBasePrice();
     }
