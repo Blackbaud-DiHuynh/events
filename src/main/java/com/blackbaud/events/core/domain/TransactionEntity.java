@@ -30,6 +30,6 @@ public class TransactionEntity {
     private Integer id;
     private BigDecimal unitPrice;
     private Integer ticketId;
-    private Integer quantity;
+    private int quantity;
 
 }

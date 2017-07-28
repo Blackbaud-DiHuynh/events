@@ -9,6 +9,7 @@ import com.blackbaud.events.client.EventClient
 import com.blackbaud.events.client.TransactionClient
 import com.blackbaud.events.core.domain.DynamicRuleRepository
 import org.springframework.beans.factory.annotation.Autowired
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.blackbaud.events.core.CoreARandom.aRandom
@@ -31,6 +32,12 @@ class DynamicPricingEventResourceSpec extends Specification {
     int capacity = 100
     BigDecimal basePrice = BigDecimal.TEN
 
+    int firstThreshold = 50
+    int firstPriceChange = 5
+
+    int secondThreshold = 25
+    int secondPriceChange = 10
+
     def "when an event reaches inventory threshold, ticket price should automatically adjusts"() {
         given:
         Ticket ticket = aRandom.ticket().basePrice(basePrice).capacity(capacity).build()
@@ -38,8 +45,8 @@ class DynamicPricingEventResourceSpec extends Specification {
 
         and:
         dynamicRuleClient.create(aRandom.dynamicRule(event.firstTicket().id)
-                                         .inventoryThreshold(50)
-                                         .priceChange(5)
+                                         .inventoryThreshold(firstThreshold)
+                                         .priceChange(firstPriceChange)
                                          .build())
 
         when:
@@ -52,7 +59,7 @@ class DynamicPricingEventResourceSpec extends Specification {
         sellTickets(eventDetail.firstTicket().id, 50)
 
         then:
-        eventClient.find(event.id).firstTicket().currentPrice == basePrice + 5
+        getCurrentPriceForEvent(eventDetail) == basePrice + 5
     }
 
     def "should support multiple dynamic rules"() {
@@ -61,19 +68,31 @@ class DynamicPricingEventResourceSpec extends Specification {
         Event event = eventClient.create(aRandom.event().tickets([ticket]).build())
         Integer ticketId = event.firstTicket().id
 
-        and:
-        int firstPriceChange = 5
-        dynamicRuleClient.create(aRandom.dynamicRule(ticketId).inventoryThreshold(50).priceChange(firstPriceChange).build())
-
-        and:
-        int secondPriceChange = 10
-        dynamicRuleClient.create(aRandom.dynamicRule(ticketId).inventoryThreshold(75).priceChange(secondPriceChange).build())
+        and: "add all dynamic rules"
+        dynamicRuleClient.create(aRandom.dynamicRule(ticketId).inventoryThreshold(firstThreshold).priceChange(firstPriceChange).build())
+        dynamicRuleClient.create(aRandom.dynamicRule(ticketId).inventoryThreshold(secondThreshold).priceChange(secondPriceChange).build())
 
         when:
-        sellTickets(ticketId, 75)
+        sellTickets(ticketId, 20)
 
         then:
-        eventClient.find(event.id).firstTicket().currentPrice == basePrice + firstPriceChange + secondPriceChange
+        getCurrentPriceForEvent(event) == basePrice
+
+        when:
+        sellTickets(ticketId, 34)
+
+        then:
+        getCurrentPriceForEvent(event) == basePrice + firstPriceChange
+
+        when:
+        sellTickets(ticketId, 25)
+
+        then:
+        getCurrentPriceForEvent(event) == basePrice + firstPriceChange + secondPriceChange
+    }
+
+    def BigDecimal getCurrentPriceForEvent(Event event) {
+        eventClient.find(event.id).firstTicket().currentPrice
     }
 
     def sellTickets(Integer ticketId, Integer quantity) {
