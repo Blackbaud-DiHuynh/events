@@ -45,8 +45,7 @@ public class TicketResource {
     public Ticket createTicket(Ticket ticket) {
         TicketEntity ticketEntity = ticketMapper.toEntity(ticket);
         TicketEntity savedEntity = ticketRepository.save(ticketEntity);
-        Ticket savedticket = ticketMapper.toApi(savedEntity);
-        return savedticket;
+        return ticketMapper.toApi(savedEntity);
     }
 
     @PUT
@@ -54,13 +53,12 @@ public class TicketResource {
     public Ticket update(@PathParam("id") Integer id, Ticket ticket) {
         TicketEntity ticketEntity = ticketMapper.toEntity(ticket);
         TicketEntity savedEntity = ticketRepository.save(ticketEntity);
-        Ticket savedticket = ticketMapper.toApi(savedEntity);
-        return savedticket;
+        return ticketMapper.toApi(savedEntity);
     }
 
     @DELETE
     @Path("{id}")
-    public void deleteTicket(@PathParam("id") Long id) {
+    public void deleteTicket(@PathParam("id") Integer id) {
         ticketRepository.delete(id);
     }
 

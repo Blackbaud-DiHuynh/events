@@ -65,12 +65,9 @@ public class EventResource {
 
     private Event getEventWithTicketInfo(EventEntity eventEntity) {
         List<TicketEntity> ticketEntities = ticketRepository.findByEventId(eventEntity.getId());
-
         Event event = eventConverter.toApi(eventEntity);
         event.setTickets(ticketMapper.toApiList(ticketEntities));
-
         event.getTickets().forEach(ticket -> ticket.setCurrentPrice(dynamicPricingService.getCurrentPrice(ticket)));
-
         event.setRemainingInventory(getRemainingInventory(event));
         return event;
     }
@@ -88,9 +85,9 @@ public class EventResource {
         EventEntity createdEvent = eventRepository.save(entity);
         List<TicketEntity> ticketEntities = ticketMapper.toEntityList(event.getTickets());
         ticketEntities.forEach(ticket -> ticket.setEventId(createdEvent.getId()));
-        List<TicketEntity> ticketEntities1 = (List<TicketEntity>) ticketRepository.save(ticketEntities);
+        ticketEntities = (List<TicketEntity>) ticketRepository.save(ticketEntities);
         Event savedEvent = eventConverter.toApi(createdEvent);
-        savedEvent.setTickets(ticketMapper.toApiList(ticketEntities1));
+        savedEvent.setTickets(ticketMapper.toApiList(ticketEntities));
         return savedEvent;
     }
 

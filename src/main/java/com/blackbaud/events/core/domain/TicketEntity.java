@@ -27,8 +27,8 @@ public class TicketEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "ticket_seq_gen")
     @SequenceGenerator(name = "ticket_seq_gen", sequenceName = "ticket_seq")
-    private Long id;
+    private int id;
     private BigDecimal basePrice;
     private Integer eventId;
-    private Integer capacity;
+    private int capacity;
 }
