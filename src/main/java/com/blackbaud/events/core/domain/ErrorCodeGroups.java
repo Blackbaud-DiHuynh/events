@@ -1,7 +1,9 @@
 package com.blackbaud.events.core.domain;
 
 public enum ErrorCodeGroups {
-    ERROR_GROUP_EVENTS("EVENTS");
+    ERROR_GROUP_EVENTS("EVENTS"),
+    ERROR_GROUP_TRANSACTION("TRANSACTION");
+
 
     private String group;
 

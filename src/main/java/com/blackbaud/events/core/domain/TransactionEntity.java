@@ -32,4 +32,7 @@ public class TransactionEntity {
     private Integer ticketId;
     private int quantity;
 
+    public boolean isValid() {
+        return quantity > 0;
+    }
 }

@@ -1,5 +1,6 @@
 package com.blackbaud.events.resources
 
+import com.blackbaud.boot.exception.BadRequestException
 import com.blackbaud.boot.exception.NotFoundException
 import com.blackbaud.events.ComponentTest
 import com.blackbaud.events.api.Event
@@ -102,6 +103,12 @@ class EventResourceSpec extends Specification {
 
         then:
         capacity - 2 == eventClient.find(event.id).remainingInventory
+
+        when:
+        sellTickets(eventDetail.tickets[0].id, -10)
+
+        then:
+        thrown(BadRequestException)
     }
 
     def "getAll should return tickets and their prices"() {
@@ -119,7 +126,11 @@ class EventResourceSpec extends Specification {
     }
 
     def sellOneTicket(Integer ticketId) {
-        Transaction transaction = aRandom.transaction().quantity(1)
+        sellTickets(ticketId, 1)
+    }
+
+    def sellTickets(Integer ticketId, Integer quantity) {
+        Transaction transaction = aRandom.transaction().quantity(quantity)
                 .ticketId(ticketId)
                 .build()
         transactionClient.create(transaction)

@@ -1,10 +1,12 @@
 package com.blackbaud.events.resources;
 
+import com.blackbaud.boot.exception.BadRequestException;
 import com.blackbaud.events.api.ResourcePaths;
 import com.blackbaud.events.api.Ticket;
 import com.blackbaud.events.api.Transaction;
 import com.blackbaud.events.core.domain.TicketEntity;
 import com.blackbaud.events.core.domain.TransactionEntity;
+import com.blackbaud.events.core.domain.TransactionErrorCodes;
 import com.blackbaud.events.core.domain.TransactionRepository;
 import com.blackbaud.mapper.ApiEntityMapper;
 import com.blackbaud.security.InvocationContext;
@@ -39,6 +41,9 @@ public class TransactionResource {
     @POST
     public Transaction purchaseTicket(Transaction transaction) {
         TransactionEntity transactionEntity = transactionMapper.toEntity(transaction);
+        if (!transactionEntity.isValid()) {
+            throw new BadRequestException(TransactionErrorCodes.NEGATIVE_QUANTITY, "Can not purchase a negative amount {} of tickets.", transactionEntity.getQuantity());
+        }
         TransactionEntity savedEntity = transactionRepository.save(transactionEntity);
         return transactionMapper.toApi(savedEntity);
     }
