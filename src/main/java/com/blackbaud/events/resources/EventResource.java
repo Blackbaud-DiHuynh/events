@@ -1,6 +1,5 @@
 package com.blackbaud.events.resources;
 
-import com.blackbaud.boot.exception.ErrorEntity;
 import com.blackbaud.boot.exception.NotFoundException;
 import com.blackbaud.events.api.Event;
 import com.blackbaud.events.api.ResourcePaths;
@@ -14,7 +13,9 @@ import com.blackbaud.events.core.domain.TicketRepository;
 import com.blackbaud.events.core.domain.TransactionEntity;
 import com.blackbaud.events.core.domain.TransactionRepository;
 import com.blackbaud.mapper.ApiEntityMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 @Component
 @Path(ResourcePaths.EVENT_PATH)
 @Produces(MediaType.APPLICATION_JSON)
+@Slf4j
 public class EventResource {
 
     @Context
@@ -56,7 +58,7 @@ public class EventResource {
 
     @GET
     public List<Event> findAll() {
-        List<EventEntity>  allEvents = (List<EventEntity>) eventRepository.findAll();
+        List<EventEntity> allEvents = (List<EventEntity>) eventRepository.findAll();
         return allEvents.stream().map(this::getEventWithTicketInfo).collect(Collectors.toList());
     }
 
@@ -108,7 +110,10 @@ public class EventResource {
     @DELETE
     @Path("{id}")
     public void delete(@PathParam("id") Integer id) {
-        eventRepository.delete(id);
+        try {
+            eventRepository.delete(id);
+        } catch (EmptyResultDataAccessException ex) {
+        }
     }
 
 

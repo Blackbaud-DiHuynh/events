@@ -75,6 +75,14 @@ class EventResourceSpec extends Specification {
         thrown(NotFoundException)
     }
 
+    def "should be able to delete nonexistent events"() {
+        when:
+        eventClient.delete(aRandom.intId())
+
+        then:
+        noExceptionThrown()
+    }
+
     def "should save ticket information when posting an event"() {
         given:
         Event event = aRandom.event().build()

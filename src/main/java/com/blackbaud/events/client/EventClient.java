@@ -9,5 +9,4 @@ public class EventClient extends CrudClient<Event, EventClient> {
     public EventClient(String baseUrl) {
         super(baseUrl, ResourcePaths.EVENT_PATH, Event.class);
     }
-
 }
