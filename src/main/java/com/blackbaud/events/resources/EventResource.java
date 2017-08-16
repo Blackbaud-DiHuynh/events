@@ -1,10 +1,13 @@
 package com.blackbaud.events.resources;
 
+import com.blackbaud.boot.exception.ErrorEntity;
+import com.blackbaud.boot.exception.NotFoundException;
 import com.blackbaud.events.api.Event;
 import com.blackbaud.events.api.ResourcePaths;
 import com.blackbaud.events.api.Ticket;
 import com.blackbaud.events.core.domain.DynamicPricingService;
 import com.blackbaud.events.core.domain.EventEntity;
+import com.blackbaud.events.core.domain.EventErrorCodes;
 import com.blackbaud.events.core.domain.EventRepository;
 import com.blackbaud.events.core.domain.TicketEntity;
 import com.blackbaud.events.core.domain.TicketRepository;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -60,6 +64,9 @@ public class EventResource {
     @Path("{id}")
     public Event get(@PathParam("id") Integer id) {
         EventEntity eventEntity = eventRepository.findOne(id);
+        if (eventEntity == null) {
+            throw new NotFoundException(EventErrorCodes.EVENT_NOT_FOUND, "Event with id={} does not exist", id);
+        }
         return getEventWithTicketInfo(eventEntity);
     }
 
@@ -97,6 +104,13 @@ public class EventResource {
         EventEntity savedEvent = eventRepository.save(eventConverter.toEntity(event));
         return eventConverter.toApi(savedEvent);
     }
+
+    @DELETE
+    @Path("{id}")
+    public void delete(@PathParam("id") Integer id) {
+        eventRepository.delete(id);
+    }
+
 
     public static class EventConverter extends ApiEntityMapper<Event, EventEntity> {
 

@@ -1,5 +1,6 @@
 package com.blackbaud.events.resources
 
+import com.blackbaud.boot.exception.NotFoundException
 import com.blackbaud.events.ComponentTest
 import com.blackbaud.events.api.Event
 import com.blackbaud.events.api.Transaction
@@ -62,6 +63,15 @@ class EventResourceSpec extends Specification {
 
         and:
         eventClient.find(updatedEvent.id).location == newLocation
+
+        when:
+        eventClient.delete(updatedEvent.id)
+
+        and:
+        eventClient.find(updatedEvent.id)
+
+        then:
+        thrown(NotFoundException)
     }
 
     def "should save ticket information when posting an event"() {

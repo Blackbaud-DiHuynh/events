@@ -1,11 +1,8 @@
 package com.blackbaud.events.client;
 
-import com.blackbaud.rest.client.CrudClient;
-import com.blackbaud.rest.client.CrudClientRequest;
-import com.blackbaud.events.api.ResourcePaths;
 import com.blackbaud.events.api.Event;
-
-import java.util.List;
+import com.blackbaud.events.api.ResourcePaths;
+import com.blackbaud.rest.client.CrudClient;
 
 public class EventClient extends CrudClient<Event, EventClient> {
 
