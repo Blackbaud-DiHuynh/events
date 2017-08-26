@@ -7,8 +7,10 @@ import com.blackbaud.events.core.domain.DynamicRuleRepository;
 import com.blackbaud.mapper.ApiEntityMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -34,11 +36,19 @@ public class DynamicRuleResource {
         return converter.toApi(created);
     }
 
-
     @GET
     @Path("{ticketId}")
     public List<DynamicRule> getRules(@PathParam("ticketId") Integer ticketId) {
         List<DynamicRuleEntity> entities = dynamicRuleRepository.findByTicketId(ticketId);
         return converter.toApiList(entities);
+    }
+
+    @DELETE
+    @Path("{dynamicRuleId}")
+    public void deleteRule(@PathParam("dynamicRuleId") Integer dynamicRuleId) {
+        try {
+            dynamicRuleRepository.delete(dynamicRuleId);
+        } catch (EmptyResultDataAccessException ex) {
+        }
     }
 }

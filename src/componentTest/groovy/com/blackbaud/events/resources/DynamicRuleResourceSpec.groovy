@@ -2,13 +2,8 @@ package com.blackbaud.events.resources
 
 import com.blackbaud.events.ComponentTest
 import com.blackbaud.events.api.DynamicRule
-import com.blackbaud.events.api.Event
 import com.blackbaud.events.client.DynamicRuleClient
-import com.blackbaud.events.client.EventClient
-import com.blackbaud.events.client.TicketClient
 import com.blackbaud.events.core.domain.DynamicRuleRepository
-import com.blackbaud.events.core.domain.EventRepository
-import com.blackbaud.events.core.domain.TicketRepository
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 
@@ -47,5 +42,26 @@ class DynamicRuleResourceSpec extends Specification {
         rules[0] == rule1
         rules[1] == rule2
     }
+
+    def "can delete a dynamic rule"() {
+        given:
+        Integer ticketId = aRandom.intId()
+        DynamicRule rule = dynamicRuleClient.create(aRandom.dynamicRule().ticketId(ticketId).build())
+
+        when:
+        dynamicRuleClient.delete(rule.id)
+
+        then:
+        dynamicRuleClient.findManyByTicketId(ticketId) == []
+    }
+
+    def "trying to delete a nonexistent rule should not throw errors"() {
+        when:
+        dynamicRuleClient.delete(aRandom.intId())
+
+        then:
+        noExceptionThrown()
+    }
+
 }
 
