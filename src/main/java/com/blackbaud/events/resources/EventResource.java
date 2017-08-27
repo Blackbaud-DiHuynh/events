@@ -8,6 +8,7 @@ import com.blackbaud.events.core.domain.DynamicPricingService;
 import com.blackbaud.events.core.domain.EventEntity;
 import com.blackbaud.events.core.domain.EventErrorCodes;
 import com.blackbaud.events.core.domain.EventRepository;
+import com.blackbaud.events.core.domain.EventService;
 import com.blackbaud.events.core.domain.TicketEntity;
 import com.blackbaud.events.core.domain.TicketRepository;
 import com.blackbaud.events.core.domain.TransactionEntity;
@@ -45,21 +46,14 @@ public class EventResource {
     private EventRepository eventRepository;
 
     @Autowired
-    private TicketRepository ticketRepository;
-
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private EventService eventService;
 
     private EventConverter eventConverter = new EventConverter();
-    private ApiEntityMapper<Ticket, TicketEntity> ticketMapper = new ApiEntityMapper<>(Ticket.class, TicketEntity.class);
-
-    @Autowired
-    private DynamicPricingService dynamicPricingService;
 
     @GET
     public List<Event> findAll() {
         List<EventEntity> allEvents = (List<EventEntity>) eventRepository.findAll();
-        return allEvents.stream().map(this::getEventWithTicketInfo).collect(Collectors.toList());
+        return allEvents.stream().map(event -> eventService.getEventWithTicketInfo(event)).collect(Collectors.toList());
     }
 
     @GET
@@ -69,35 +63,11 @@ public class EventResource {
         if (eventEntity == null) {
             throw new NotFoundException(EventErrorCodes.EVENT_NOT_FOUND, "Event with id={} does not exist", id);
         }
-        return getEventWithTicketInfo(eventEntity);
+        return eventService.getEventWithTicketInfo(eventEntity);
     }
-
-    private Event getEventWithTicketInfo(EventEntity eventEntity) {
-        List<TicketEntity> ticketEntities = ticketRepository.findByEventId(eventEntity.getId());
-        Event event = eventConverter.toApi(eventEntity);
-        event.setTickets(ticketMapper.toApiList(ticketEntities));
-        event.getTickets().forEach(ticket -> ticket.setCurrentPrice(dynamicPricingService.getCurrentPrice(ticket)));
-        event.setRemainingInventory(getRemainingInventory(event));
-        return event;
-    }
-
-    private Integer getRemainingInventory(Event event) {
-        List<Integer> ticketIds = event.getTickets().stream().map(ticket -> ticket.getId()).collect(Collectors.toList());
-        List<TransactionEntity> transactions = transactionRepository.findByTicketIdIn(ticketIds);
-        Integer totalTicketsSold = transactions.stream().mapToInt(TransactionEntity::getQuantity).sum();
-        return event.getCapacity() - totalTicketsSold;
-    }
-
     @POST
     public Event create(@Valid Event event) {
-        EventEntity entity = eventConverter.toEntity(event);
-        EventEntity createdEvent = eventRepository.save(entity);
-        List<TicketEntity> ticketEntities = ticketMapper.toEntityList(event.getTickets());
-        ticketEntities.forEach(ticket -> ticket.setEventId(createdEvent.getId()));
-        ticketEntities = (List<TicketEntity>) ticketRepository.save(ticketEntities);
-        Event savedEvent = eventConverter.toApi(createdEvent);
-        savedEvent.setTickets(ticketMapper.toApiList(ticketEntities));
-        return savedEvent;
+        return eventService.create(event);
     }
 
     @PUT
@@ -116,7 +86,6 @@ public class EventResource {
             return;
         }
     }
-
 
     public static class EventConverter extends ApiEntityMapper<Event, EventEntity> {
 

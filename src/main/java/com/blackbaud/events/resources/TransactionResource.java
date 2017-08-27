@@ -1,14 +1,12 @@
 package com.blackbaud.events.resources;
 
-import com.blackbaud.boot.exception.BadRequestException;
 import com.blackbaud.events.api.ResourcePaths;
 import com.blackbaud.events.api.Transaction;
-import com.blackbaud.events.core.domain.DynamicPricingService;
-import com.blackbaud.events.core.domain.TicketEntity;
 import com.blackbaud.events.core.domain.TicketRepository;
+import com.blackbaud.events.core.domain.TicketService;
 import com.blackbaud.events.core.domain.TransactionEntity;
-import com.blackbaud.events.core.domain.TransactionErrorCodes;
 import com.blackbaud.events.core.domain.TransactionRepository;
+import com.blackbaud.events.core.domain.TransactionService;
 import com.blackbaud.mapper.ApiEntityMapper;
 import com.blackbaud.security.InvocationContext;
 import lombok.extern.slf4j.Slf4j;
@@ -37,26 +35,12 @@ public class TransactionResource {
     InvocationContext invocationContext;
 
     @Autowired
-    TicketRepository ticketRepository;
-
-    @Autowired
-    DynamicPricingService dynamicPricingService;
+    TransactionService transactionService;
 
     @POST
     public Transaction purchaseTicket(Transaction transaction) {
         TransactionEntity transactionEntity = transactionMapper.toEntity(transaction);
-        if (!transactionEntity.isValid()) {
-            throw new BadRequestException(TransactionErrorCodes.INVALID_QUANTITY, "Can not purchase a negative amount {} of tickets.", transactionEntity.getQuantity());
-        }
-
-        TicketEntity ticket = ticketRepository.findOne(transaction.getTicketId());
-        if (ticket == null) {
-            throw new BadRequestException(TransactionErrorCodes.INVALID_TICKET, "Ticket {} does not exist", transaction.getTicketId());
-        }
-        if (transaction.getQuantity() > dynamicPricingService.calculateTicketsRemaining(ticket.getId(), ticket.getCapacity())){
-            throw new BadRequestException(TransactionErrorCodes.INVALID_QUANTITY, "The number of tickets quantity {} is more than capacity {}.", transaction.getQuantity(), ticket.getCapacity());
-        }
-
+        transactionService.validateTransaction(transactionEntity);
         TransactionEntity savedEntity = transactionRepository.save(transactionEntity);
         return transactionMapper.toApi(savedEntity);
     }

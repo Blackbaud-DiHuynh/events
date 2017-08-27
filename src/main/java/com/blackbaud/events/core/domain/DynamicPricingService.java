@@ -15,14 +15,14 @@ public class DynamicPricingService {
     DynamicRuleRepository ruleRepository;
 
     @Autowired
-    TransactionRepository transactionRepository;
+    TicketService ticketService;
 
     public BigDecimal getCurrentPrice(Ticket ticket) {
         List<DynamicRuleEntity> dynamicRules = ruleRepository.findByTicketId(ticket.getId());
         if (!dynamicRules.isEmpty()) {
 
             BigDecimal totalPriceChange = dynamicRules.stream()
-                    .filter(rule -> rule.shouldApply(calculateTicketsRemaining(ticket.getId(), ticket.getCapacity())))
+                    .filter(rule -> rule.shouldApply(ticketService.calculateTicketsRemaining(ticket)))
                     .map(DynamicRuleEntity::getPriceChange)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -31,11 +31,5 @@ public class DynamicPricingService {
         return ticket.getBasePrice();
     }
 
-    public Integer calculateTicketsRemaining(Integer ticketId, Integer capacity) {
-        List<TransactionEntity> transactions = transactionRepository.findByTicketId(ticketId);
-        Integer totalTicketsSold = transactions.stream().mapToInt(TransactionEntity::getQuantity).sum();
-        Integer ticketCapacity = capacity == null ? 0 : capacity;
-        return ticketCapacity - totalTicketsSold;
-    }
 }
 
