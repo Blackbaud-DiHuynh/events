@@ -113,6 +113,7 @@ public class EventResource {
         try {
             eventRepository.delete(id);
         } catch (EmptyResultDataAccessException ex) {
+            return;
         }
     }
 
