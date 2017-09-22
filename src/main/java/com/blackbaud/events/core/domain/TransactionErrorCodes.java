@@ -4,7 +4,8 @@ import com.blackbaud.boot.exception.ErrorCodes;
 
 public enum TransactionErrorCodes implements ErrorCodes {
 
-    NEGATIVE_QUANTITY(0, ErrorCodeGroups.ERROR_GROUP_TRANSACTION);
+    INVALID_QUANTITY(0, ErrorCodeGroups.ERROR_GROUP_TRANSACTION),
+    INVALID_TICKET(1, ErrorCodeGroups.ERROR_GROUP_TRANSACTION);
 
     private int subcode;
     private ErrorCodeGroups errorCodeGroup;
@@ -17,4 +18,5 @@ public enum TransactionErrorCodes implements ErrorCodes {
     public String makeErrorCode() {
         return this.errorCodeGroup.makeErrorCode(this.subcode);
     }
+
 }
