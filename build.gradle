@@ -1,6 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = "1.4.1.RELEASE-2.20170915.155857"
+        springBootVersion = "1.4.1.RELEASE"
+        commonSpringBootVersion = "${springBootVersion}-2.20170915.155857"
     }
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
@@ -30,15 +31,15 @@ sourceSets {
 }
 
 dependencies {
-    compile "com.blackbaud:common-spring-boot-rest:${springBootVersion}"
-    compile "com.blackbaud:common-spring-boot-persistence:${springBootVersion}"
+    compile "com.blackbaud:common-spring-boot-rest:${commonSpringBootVersion}"
+    compile "com.blackbaud:common-spring-boot-persistence:${commonSpringBootVersion}"
 
     compile "postgresql:postgresql:9.0-801.jdbc4"
     compile "org.liquibase:liquibase-core"
 
-    clientCompile "com.blackbaud:common-spring-boot-rest:${springBootVersion}"
+    clientCompile "com.blackbaud:common-spring-boot-rest:${commonSpringBootVersion}"
 
-    mainTestCompile "com.blackbaud:common-spring-boot-rest-test:${springBootVersion}"
+    mainTestCompile "com.blackbaud:common-spring-boot-rest-test:${commonSpringBootVersion}"
     mainTestCompile "com.blackbaud:common-test:1.+"
     mainTestCompile "org.codehaus.groovy:groovy-all:2.4.7"
     mainTestCompile ("org.spockframework:spock-spring:1.0-groovy-2.4") {
