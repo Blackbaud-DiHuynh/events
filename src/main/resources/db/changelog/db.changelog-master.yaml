@@ -11,6 +11,3 @@ databaseChangeLog:
 
   - include:
         file: db/create_dynamic_pricing.sql
-
-  - include:
-        file: db/add_seed_data.sql
